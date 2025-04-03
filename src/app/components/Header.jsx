@@ -1,16 +1,60 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
 import Modal from "react-modal";
 import { useState } from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { HiCamera } from "react-icons/hi";
 import { AiOutlineClose } from "react-icons/ai";
+import supabase from "../supabase.js";
 export default function Header() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageFileUrl, setImageFileUrl] = useState(null);
+  const [imageFileUploading, setImageFileUploading] = useState(false);
+  const filePickerRef = useRef();
+
+  const addImageToPost = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setImageFileUrl(URL.createObjectURL(file));
+      console.log(file);
+      console.log(imageFileUrl);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedFile) {
+      uploadImageToStorage();
+    }
+  }, [selectedFile]);
+
+  async function uploadImageToStorage() {
+    setImageFileUploading(true);
+
+    const fileName = new Date().getTime() + "-" + selectedFile.name;
+    // supabase
+    const { data, error } = await supabase.storage
+      .from("insta-next") // "images" 버킷에 업로드
+      .upload(fileName, selectedFile);
+
+    if (error) {
+      console.error("Upload Fail:", error.message);
+      alert("Upload Fail!");
+    } else {
+      console.log("Upload Success:", data);
+      // url of uploaded image
+      const { data: urlData } = supabase.storage
+        .from("insta-next")
+        .getPublicUrl(fileName);
+      setImageFileUrl(urlData.publicUrl); // image preview
+    }
+    setImageFileUploading(false);
+  }
   console.log(session);
   return (
     <div className="shadow-sm border-b sticky top-0 bg-white z-30 p-3">
@@ -60,8 +104,31 @@ export default function Header() {
           onRequestClose={() => setIsOpen(false)}
         >
           <div className="flex flex-col justify-center items-center h-[100%]">
-            <HiCamera className="text-4xl text-gray-400 cursor-pointer" />
-            <button onClick={() => setIsOpen(false)}>Close</button>
+            {selectedFile ? (
+              <img
+                onClick={() => setSelectedFile(null)}
+                src={imageFileUrl}
+                alt="selected file"
+                className={`w-full max-h-[250px] object-over cursor-pointer ${
+                  imageFileUploading ? "animate-pulse" : ""
+                }`}
+              />
+            ) : (
+              <>
+                <HiCamera
+                  onClick={() => filePickerRef.current.click()}
+                  className="text-4xl text-gray-400 cursor-pointer"
+                />
+                <input
+                  hidden
+                  ref={filePickerRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={addImageToPost}
+                />
+              </>
+            )}
+            {/* <button onClick={() => setIsOpen(false)}>Close</button> */}
           </div>
           <input
             type="text"
