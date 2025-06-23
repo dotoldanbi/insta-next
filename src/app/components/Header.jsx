@@ -56,7 +56,7 @@ export default function Header() {
       (error) => {
         console.error(error);
         setImageFileUploading(false); // 업로딩 상태
-        setImageFileUrl(null); // 이미지 로컬 URL
+        setImageFileUrl(null); // 이미지 로컬 URLㄹ
         setSelectedFile(null); // 선택된 파일 초기화
       },
       () => {
@@ -72,7 +72,7 @@ export default function Header() {
     setPostUploading(true);
     const docRef = await addDoc(collection(db, "posts"), {
       username: session.user.username,
-      caption: "",
+      caption: caption,
       profileImg: session.user.image,
       image: imageFileUrl,
       timestamp: serverTimestamp(),

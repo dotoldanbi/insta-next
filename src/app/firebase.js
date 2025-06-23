@@ -5,24 +5,13 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.FIRE_API_KEY,
-  authDomain: process.env.FIRE_AUTH_DOMAIN,
-  projectId: process.env.FIRE_PROJECT_ID,
-  storageBucket: process.env.FIRE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIRE_MESSAGING_SENDER_ID,
-  appId: process.env.FIRE_APP_ID,
+  apiKey: "AIzaSyCeiV-UnDceMrLWwW36Ar8PsaPX4YI-97k",
+  authDomain: "insta-next-dbcaf.firebaseapp.com",
+  projectId: "insta-next-dbcaf",
+  storageBucket: "insta-next-dbcaf.firebasestorage.app",
+  messagingSenderId: "254337175839",
+  appId: "1:254337175839:web:e97653dfd5456ca57a202a",
 };
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-
-// service firebase.storage {
-//     match /b/{bucket}/o {
-//       match /{allPaths=**} {
-//         allow read;
-//         allow write: if
-//         request.resource.size < 2 * 1024 * 1024 &&
-//         request.resource.contentType.matches('image/.*')
-//       }
-//     }
-//   }
